@@ -23,3 +23,10 @@ class ResourceTelemetryLogger:
             f.write(log_line)
                     
         print(f"[TELEMETRY] Batch {batch_id} | Throughput: {throughput:.2f} iter/sec | Mem Delta: {mem_delta:.2f}MB")
+    def load_threshold_configs(self):
+        """Dynamic look-up for hardware threshold limits from the config layer."""
+        try:
+            with open(self.config_path, "r") as f:
+                return json.load(f)
+        except (FileNotFoundError, json.JSONDecodeError):
+            return {"max_memory_threshold_mb": 512, "target_latency_ms": 15.0}
