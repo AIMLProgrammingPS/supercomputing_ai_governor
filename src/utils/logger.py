@@ -13,3 +13,13 @@ class ResourceTelemetryLogger:
         if not os.path.exists(self.log_file):
             with open(self.log_file, "w") as f:
                 f.write("timestamp,batch_id,execution_time_sec,iterations_per_sec,memory_delta_mb,cache_status\n")
+    def log_metrics(self, batch_id, exec_time, iterations, mem_delta, cache_status="STABLE"):
+        """Logs localized hardware execution deltas for memory bus saturation analysis."""
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
+        throughput = iterations / exec_time if exec_time > 0 else 0
+        log_line = f"{timestamp},{batch_id},{exec_time:.6f},{throughput:.2f},{mem_delta:.4f},{cache_status}\n"
+        
+        with open(self.log_file, "a") as f:
+            f.write(log_line)
+                    
+        print(f"[TELEMETRY] Batch {batch_id} | Throughput: {throughput:.2f} iter/sec | Mem Delta: {mem_delta:.2f}MB")
