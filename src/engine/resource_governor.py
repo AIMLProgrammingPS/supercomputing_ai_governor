@@ -5,7 +5,7 @@ Description: A Resource-Aware Workload Governor using Discrete Approximation
              to dynamically optimize simulation execution on limited hardware.
 """
 
-import numpy as np
+import pandas as pd, numpy as np
 
 class SimulationWorkloadGovernor:
     def __init__(self, available_cores: int, memory_bandwidth_gbps: float):
