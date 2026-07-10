@@ -7,7 +7,7 @@ Description: Core Discrete-Event Simulation Loop that executes workflows
 
 import time
 import random
-from src.engine.resource_governor.py import SimulationWorkloadGovernor # Ensure path alignment
+from src.engine.resource_governor import SimulationWorkloadGovernor # Ensure path alignment
 
 def run_resource_constrained_simulation():
     # Instantiate governor assuming a standard 4-core, 16GB/s bandwidth system
