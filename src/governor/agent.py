@@ -1,8 +1,7 @@
 """
 NUMTA 2026 / Operations Research Forum Alignment
 Track: Artificial Intelligence in OR & Machine Learning in OR
-Description: Autonomous optimization agent that loads external hyperparameters
-             and calculates operational penalty weights dynamically.
+Description: Fault-tolerant configuration loader with robust exception catchers.
 """
 
 import json
@@ -17,19 +16,26 @@ class GovernorAgent:
         self.load_hyperparameters()
 
     def load_hyperparameters(self):
-        """Loads structural execution constraints from the configuration layer."""
-        if os.path.exists(self.config_path):
-            with open(self.config_path, "r") as f:
-                config = json.load(f)
-                thresholds = config.get("hardware_thresholds", {})
-                self.cpu_threshold = thresholds.get("max_cpu_utilization_percent", 85.0)
-                self.task_threshold = thresholds.get("max_pending_tasks_threshold", 5000)
-            log_event("info", f"GovernorAgent loaded hyperparams from {self.config_path}")
-        else:
-            log_event("warn", f"Config not found at {self.config_path}. Using fallback defaults.")
+        try:
+            if os.path.exists(self.config_path):
+                with open(self.config_path, "r") as f:
+                    config = json.load(f)
+                    thresholds = config.get("hardware_thresholds", {})
+                    self.cpu_threshold = float(thresholds.get("max_cpu_utilization_percent", 85.0))
+                    self.task_threshold = int(thresholds.get("max_pending_tasks_threshold", 5000))
+                log_event("info", f"GovernorAgent successfully parsed hyperparams from {self.config_path}")
+            else:
+                raise FileNotFoundError("Configuration file is completely missing.")
+        except (json.JSONDecodeError, TypeError, ValueError) as e:
+            log_event("error", f"Corrupt config file! Falling back to safe defaults. Error: {e}")
+            self.cpu_threshold = 85.0
+            self.task_threshold = 5000
+        except Exception as e:
+            log_event("error", f"Unexpected structural error: {e}. Loading safe operational state.")
+            self.cpu_threshold = 85.0
+            self.task_threshold = 5000
 
     def evaluate_system_state(self, cpu_load: float, pending_tasks: int) -> str:
-        """Applies rule-based optimization choices to govern system execution."""
         if cpu_load > self.cpu_threshold or pending_tasks > self.task_threshold:
             return "APPROXIMATED_DISCRETE_MILP"
         return "HIGH_FIDELITY_CONTINUOUS"
