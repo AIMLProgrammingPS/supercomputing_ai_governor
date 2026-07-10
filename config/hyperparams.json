@@ -1,0 +1,10 @@
+{
+  "hardware_thresholds": {
+    "max_cpu_utilization_percent": 85.0,
+    "max_pending_tasks_threshold": 5000
+  },
+  "optimization_weights": {
+    "continuous_scale": 1.0,
+    "discrete_approximation_scale": 0.1
+  }
+}
