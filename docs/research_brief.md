@@ -8,3 +8,9 @@
 
 ## Solution Architecture Definition
 Our framework introduces a lightweight, low-overhead Python/NumPy execution environment optimized for resource-constrained client machines, bridging the gap between heavy HPC schedulers and accessible local deployment.
+
+## Implementation Framework (July 2026 Status)
+The codebase validates this architecture through three integrated components:
+1. **Config-Driven Governor Agent (`GovernorAgent`)**: Dynamically parses target thresholds (e.g., CPU load limits, max queue capacity) with fault-tolerant exception handling.
+2. **Mathematical Optimization Engine (`SimulationWorkloadGovernor`)**: Swaps execution strategies under load using a live `scipy.optimize.linprog` Linear Programming solver to maximize resource utility allocation.
+3. **Telemetry & Visualization Matrix**: Outputs execution cycle performance tracking directly to structured CSV storage and compiles analytical graphs using `matplotlib`.
