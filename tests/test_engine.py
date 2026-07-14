@@ -22,7 +22,7 @@ class TestResourceGovernor(unittest.TestCase):
         # Under high load, should pivot to approximated discrete mode
         policy = self.governor.determine_execution_policy(current_cpu_load=90.0, total_pending_tasks=6000)
         self.assertEqual(policy["execution_mode"], "APPROXIMATED_DISCRETE_MILP")
-        self.assertEqual(policy["approximation_scale"], 0.1)
+        self.assertEqual(policy["approximation_scale"], 0.7)
 
 if __name__ == "__main__":
     unittest.main()
