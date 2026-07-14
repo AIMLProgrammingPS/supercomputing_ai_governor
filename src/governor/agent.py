@@ -2,7 +2,8 @@
 The Journal of Supercomputing (Springer Nature)
 Section: Artificial Intelligence
 Track: Intelligent Resource Scheduling and Robust Optimization
-Description: Fault-tolerant configuration loader with robust exception catchers.
+Description: Fault-tolerant configuration loader with robust exception catchers
+             for real-time state-space matrix evaluations.
 """
 
 import json
