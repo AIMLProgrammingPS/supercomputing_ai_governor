@@ -31,9 +31,9 @@ Stochastic evaluations performed on a multi-threaded benchmark suite (Monte Carl
 
 | Γ Value | Mean Load Reduction |
 |---------:|-------------------:|
-| **0.00** | **14.23%** |
-| **0.25** | **15.94%** |
-| **0.50** | **16.86%** |
+| **0.00** | **14.74%** |
+| **0.25** | **16.51%** |
+| **0.50** | **17.46%** |
 
 ---
 
