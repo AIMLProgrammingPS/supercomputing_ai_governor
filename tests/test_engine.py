@@ -1,6 +1,7 @@
 """
-NUMTA 2026 Verification Suite
-Description: Unit test validating that the SimulationWorkloadGovernor 
+The Journal of Supercomputing (Springer Nature)
+Section: Artificial Intelligence
+Track: Intelligent Resource Scheduling and Robust Optimization
              correctly triggers resource throttling under high load.
 """
 
