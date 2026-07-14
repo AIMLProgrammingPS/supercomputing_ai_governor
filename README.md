@@ -3,37 +3,119 @@
 An ultra-lightweight stochastic optimization and load mitigation framework designed to dynamically govern compute scaling metrics for high-fidelity Operations Research (OR) workloads on resource-constrained client endpoints.
 
 ## Target Submission Matrix
-* **Journal:** *The Journal of Supercomputing* (Springer Nature)
-* **Section:** Artificial Intelligence
-* **Track:** Intelligent Resource Scheduling and Robust Optimization
+
+- **Journal:** *The Journal of Supercomputing* (Springer Nature)
+- **Section:** Artificial Intelligence
+- **Track:** Intelligent Resource Scheduling and Robust Optimization
 
 ---
 
-## Core System Architecture
+# Core System Architecture
 
 The ecosystem balances continuous simulation fidelity against host infrastructure constraints through three integrated modules:
 
-1. **Config-Driven Governor Agent (`src.governor.agent.py`)**: A fault-tolerant runtime state classification wrapper that evaluates live CPU utilization registers and task queue backlogs against hyperparameter profiles.
-2. **Robust Optimization Engine (`src.engine.resource_governor.py`)**: Formulates a polyhedrally constrained Robust Linear Programming (RLP) Counterpart using a 4-variable decision matrix ($x_1, x_2, z_1, z_2$) solved via the high-performance HiGHS dual-simplex solver mechanics.
-3. **Telemetry & Visualization Matrix (`src.utils.visualizer.py`)**: Compiles empirical phase distribution metrics across sequential execution horizons directly to structured CSV traces and outputs comparative performance charts.
+1. **Config-Driven Governor Agent (`src/governor/agent.py`)**  
+   A fault-tolerant runtime state classification wrapper that evaluates live CPU utilization registers and task queue backlogs against hyperparameter profiles.
+
+2. **Robust Optimization Engine (`src/engine/resource_governor.py`)**  
+   Formulates a polyhedrally constrained Robust Linear Programming (RLP) counterpart using a 4-variable decision matrix (`x₁`, `x₂`, `z₁`, `z₂`) solved via the HiGHS dual-simplex optimizer.
+
+3. **Telemetry & Visualization Matrix (`src/utils/visualizer.py`)**  
+   Compiles empirical phase distribution metrics across sequential execution horizons into structured CSV traces and comparative performance charts.
 
 ---
 
-## Technical Performance Profile (N=1000)
+# Technical Performance Profile (N = 1000)
 
-Stochastic evaluations run against a multi-threaded benchmark suite (Monte Carlo asset pricing, PageRank vector power iterations, and capacitive Vehicle Routing Algorithms) yield the following system distributions:
+Stochastic evaluations performed on a multi-threaded benchmark suite (Monte Carlo asset pricing, PageRank vector power iterations, and capacitated Vehicle Routing algorithms) produced the following empirical results:
 
-* **Baseline Operational Horizon ($\Gamma = 0.00$):** Eliminates system core-overheating flags entirely while generating an aggregate **14.74%** global load reduction.
-* **Moderate Uncertainty Envelope ($\Gamma = 0.25$):** Scales physical safety margins to counteract telemetry noise, increasing the load shed efficiency factor to **16.51%**.
-* **Conservative Robust Counterpart ($\Gamma = 0.50$):** Tightens the polyhedral boundary constraints to maximize endpoint stabilization, achieving an aggregate **17.46%** load reduction with sub-5ms thread latency constraints.
+| Γ Value | Mean Load Reduction |
+|---------:|-------------------:|
+| **0.00** | **14.23%** |
+| **0.25** | **15.94%** |
+| **0.50** | **16.86%** |
 
 ---
 
-## Workflow Execution Command Matrix
+# Installation
 
-All execution paths resolve imports absolute to the repository root via explicit path injection variables.
+Install the required Python packages:
 
-### 1. Verification Test Suite
-Execute the internal unit verification assertions to validate optimization constraints:
+```bash
+pip install numpy scipy pandas matplotlib
+```
+
+---
+
+# Project Directory Creation
+
+Before running any simulations, create the required output directories:
+
+```bash
+mkdir -p logs plots
+```
+
+---
+
+# Workflow Execution
+
+## 1. Verification Execution (Micro-Horizon)
+
+Runs a short simulation to verify logging and configuration.
+
+```bash
+export PYTHONPATH=. && python3 src/engine/simulation.py
+```
+
+---
+
+## 2. High-Density Parametric Sweeps
+
+Runs simulations across all Γ levels and generates telemetry CSV files.
+
+```bash
+export PYTHONPATH=. && python3 src/engine/scale_test.py
+```
+
+---
+
+## 3. Analytics Visualization
+
+Generates plots from the telemetry stored in the `logs/` directory.
+
+```bash
+export PYTHONPATH=. && python3 src/utils/visualizer.py
+```
+
+---
+
+## 4. Regression Testing
+
+Runs the complete unit test suite.
+
 ```bash
 export PYTHONPATH=. && python3 -m unittest discover -s tests
+```
+
+---
+
+## 5. Complete Pipeline Execution
+
+Creates the required directories, regenerates telemetry, produces plots, and prints the empirical efficiency metrics.
+
+```bash
+mkdir -p logs plots && \
+export PYTHONPATH=. && \
+python3 src/engine/scale_test.py && \
+python3 src/engine/simulation.py && \
+python3 src/utils/visualizer.py && \
+python3 -c "import pandas as pd; print(*(f'Gamma {g}: {pd.read_csv(f\"logs/scale_telemetry_gamma_{g:.2f}.csv\")[\"EfficiencySaved\"].mean()*100:.2f}%' for g in [0.00,0.25,0.50]), sep='\n')"
+```
+
+Expected output:
+
+```
+Gamma 0.00: 14.23%
+Gamma 0.25: 15.94%
+Gamma 0.50: 16.86%
+```
