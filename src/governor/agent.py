@@ -1,6 +1,7 @@
 """
-NUMTA 2026 / Operations Research Forum Alignment
-Track: Artificial Intelligence in OR & Machine Learning in OR
+The Journal of Supercomputing (Springer Nature)
+Section: Artificial Intelligence
+Track: Intelligent Resource Scheduling and Robust Optimization
 Description: Fault-tolerant configuration loader with robust exception catchers.
 """
 

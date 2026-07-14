@@ -1,6 +1,7 @@
 """
-NUMTA 2026 Telemetry Plotting Engine
-Description: Converts CSV telemetry output logs into clean, presentation-ready
+The Journal of Supercomputing (Springer Nature)
+Section: Artificial Intelligence
+Track: Intelligent Resource Scheduling and Robust OptimizationDescription: Converts CSV telemetry output logs into clean, presentation-ready
              system optimization analytical graphs.
 """
 
