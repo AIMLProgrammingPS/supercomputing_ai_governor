@@ -115,7 +115,7 @@ python3 -c "import pandas as pd; print(*(f'Gamma {g}: {pd.read_csv(f\"logs/scale
 Expected output:
 
 ```
-Gamma 0.00: 14.23%
-Gamma 0.25: 15.94%
-Gamma 0.50: 16.86%
+Gamma 0.00: 14.74%
+Gamma 0.25: 16.51%
+Gamma 0.50: 17.46%
 ```
