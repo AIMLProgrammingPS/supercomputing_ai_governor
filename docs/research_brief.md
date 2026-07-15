@@ -32,9 +32,9 @@ $$\text{subject to} \quad \mathbf{A}_{\text{ub}} \mathbf{v} \le \mathbf{b}_{\tex
 
 Where the structural parameters are instantiated as:
 * **Objective Vector ($\mathbf{c}$):** $[-1.0, -1.0, 0.0, 0.0]^T$, penalizing allocation deficits to maximize active processing cores ($x_1$) and memory bandwidth channels ($x_2$).
-* **Constraint Matrix ($\mathbf{A}_{\text{ub}}, \mathbf{b}_{\text{ub}}$):** 
+* **Constraint Matrix ```math ($\mathbf{A}_{\text{ub}}, \mathbf{b}_{\text{ub}}$):** 
 
-```math
+
 \mathbf{A}_{\text{ub}} = \begin{bmatrix} 1.0 & 1.0 & \Gamma & \Gamma \\ 1.0 & 0.0 & -1.0 & 0.0 \\ 0.0 & 1.0 & 0.0 & -1.0 \end{bmatrix}, \quad \mathbf{b}_{\text{ub}} = \begin{bmatrix} 0.85 \\ 0.0 \\ 0.0 \end{bmatrix}
 ```
   This models the robust capacity threshold $x_1 + x_2 + \Gamma z_1 + \Gamma z_2 \le 0.85$, forcing an explicit 15% safety buffer to shield local host infrastructure during scheduling spikes, paired with epigraph conditions $x_i - z_i \le 0$.
