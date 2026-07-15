@@ -8,4 +8,3 @@ data/*.npy
 .venv/
 .env
 .vscode/
-__init__.py
