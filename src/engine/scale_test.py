@@ -37,14 +37,14 @@ def run_large_scale_simulation(total_cycles: int = 1000, gamma: float = 0.00):
             simulated_pending_tasks = random.randint(800, 8000)
             
             policy = governor.determine_execution_policy(
-                current_cpu_load=simulated_cpu_load,
+                current_cpu_load=simulated_cpu_load, 
                 total_pending_tasks=simulated_pending_tasks
             )
             
             if policy["execution_mode"] == "APPROXIMATED_DISCRETE_MILP":
                 milp_count += 1
-                # Gained efficiency = (1.0 - memory bandwidth scaling factor) * optimization efficiency metric
-                saved_overhead = (1.0 - policy["approximation_scale"]) * policy["optimized_efficiency"]
+                # Directly grab the exact resource boundary efficiency value returned by the governor
+                saved_overhead = policy["optimized_efficiency"]
             else:
                 high_fid_count += 1
                 saved_overhead = 0.0
