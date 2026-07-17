@@ -39,8 +39,7 @@ def run_resource_constrained_simulation():
                 current_policy['approximation_scale'], current_policy['optimized_efficiency']
             ])
             
-            log_event("info", f"Cycle {cycle} -> Mode: {current_policy['execution_mode']} | Efficiency Index: {current_policy['optimized_efficiency']}")
-            time.sleep(0.1)
+            log_event("info", f"Cycle {cycle} -> Mode: {current_policy['execution_mode']}...")
 
 if __name__ == "__main__":
     run_resource_constrained_simulation()

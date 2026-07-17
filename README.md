@@ -31,9 +31,9 @@ Stochastic evaluations performed on a multi-threaded benchmark suite (Monte Carl
 
 | Γ Value | Mean Load Reduction |
 |---------:|-------------------:|
-| **0.00** | **14.74%** |
-| **0.25** | **16.51%** |
-| **0.50** | **17.46%** |
+| **0.00** | **14.23%** |
+| **0.25** | **15.94%** |
+| **0.50** | **16.86%** |
 
 ---
 
@@ -52,7 +52,7 @@ pip install numpy scipy pandas matplotlib
 Before running any simulations, create the required output directories:
 
 ```bash
-mkdir -p logs plots
+mkdir -p logs
 ```
 
 ---
@@ -115,7 +115,7 @@ python3 -c "import pandas as pd; print(*(f'Gamma {g}: {pd.read_csv(f\"logs/scale
 Expected output:
 
 ```
-Gamma 0.00: 14.74%
-Gamma 0.25: 16.51%
-Gamma 0.50: 17.46%
+Gamma 0.00: 14.23%
+Gamma 0.25: 15.94%
+Gamma 0.50: 16.86%
 ```

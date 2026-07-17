@@ -1,7 +1,8 @@
 """
 The Journal of Supercomputing (Springer Nature)
 Section: Artificial Intelligence
-Track: Intelligent Resource Scheduling and Robust OptimizationDescription: Converts CSV telemetry output logs into clean, presentation-ready
+Track: Intelligent Resource Scheduling and Robust Optimization
+Description: Converts CSV telemetry output logs into clean, presentation-ready
              system optimization analytical graphs.
 """
 
@@ -41,11 +42,15 @@ def generate_performance_plots(csv_path: str = "logs/telemetry.csv", output_png:
     ax2.bar(cycles, tasks, color=color, alpha=0.3, width=0.4, label="Queue Tasks")
     ax2.tick_params(axis='y', labelcolor=color)
 
-    plt.title('NUMTA 2026 AI Governor Optimization Vector Analysis', fontsize=14, pad=15)
+    plt.title('NUMTA 2026 AI Governor System Telemetry Profile')
     fig.tight_layout()
     
-    os.makedirs(os.path.dirname(output_png), exist_ok=True)
+    plot_dir = os.path.dirname(output_png)
+    if plot_dir:
+        os.makedirs(plot_dir, exist_ok=True)
+        
     plt.savefig(output_png, dpi=300)
+    plt.close()
     print(f"[Visualizer Success] Analytical optimization performance graph saved to: {output_png}")
 
 if __name__ == "__main__":

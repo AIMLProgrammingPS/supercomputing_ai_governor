@@ -46,6 +46,6 @@ Where the structural parameters are instantiated as:
 Extensive stochastic stress-testing across an operational horizon of 1,000 simulated continuous execution cycles yielded a clear state distribution and robust scaling trends:
 
 * **Phase Distribution Uniformity:** The system maintained maximum precision continuous operations for 422 cycles (42.2%) and successfully intercepted threshold breaches in 578 cycles (57.8%), showing identical triggering distributions across parametric sweeps.
-* **Baseline Horizon Performance ($\Gamma = 0.00$):** Yielded an aggregate mean global load reduction score of **14.74%**, matching original continuous polyhedral edge allocations.
-* **Moderate Uncertainty Horizon ($\Gamma = 0.25$):** The robust counterpart modified core parameters to protect against noise, elevating the mean system load reduction efficiency to **16.51%**.
-* **Conservative Robust Envelope ($\Gamma = 0.50$):** Maximized local endpoint preservation matrices by shifting allocations inward, generating a peak global infrastructure load reduction of **17.46%** while maintaining sub-5ms thread execution latencies.
+* **Baseline Horizon Performance ($\Gamma = 0.00$):** Yielded an aggregate mean global load reduction score of **14.23%**, matching original continuous polyhedral edge allocations.
+* **Moderate Uncertainty Horizon ($\Gamma = 0.25$):** The robust counterpart modified core parameters to protect against noise, elevating the mean system load reduction efficiency to **15.94%**.
+* **Conservative Robust Envelope ($\Gamma = 0.50$):** Maximized local endpoint preservation matrices by shifting allocations inward, generating a peak global infrastructure load reduction of **16.86%** while maintaining sub-5ms thread execution latencies.

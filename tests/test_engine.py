@@ -2,6 +2,7 @@
 The Journal of Supercomputing (Springer Nature)
 Section: Artificial Intelligence
 Track: Intelligent Resource Scheduling and Robust Optimization
+Description: Regression testing framework ensuring the robust LP engine
              correctly triggers resource throttling under high load.
 """
 

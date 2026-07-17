@@ -1,5 +1,7 @@
 """
-NUMTA 2026 Tracking Utilities
+The Journal of Supercomputing (Springer Nature)
+Section: Artificial Intelligence
+Track: Intelligent Resource Scheduling and Robust Optimization
 Description: Simplified telemetry logger for tracking system performance 
              metrics and resource governor state changes.
 """

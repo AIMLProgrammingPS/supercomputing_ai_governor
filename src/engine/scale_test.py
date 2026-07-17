@@ -32,7 +32,6 @@ def run_large_scale_simulation(total_cycles: int = 1000, gamma: float = 0.00):
         writer.writerow(["Cycle", "CPULoad", "PendingTasks", "Mode", "EfficiencySaved"])
         
         for cycle in range(1, total_cycles + 1):
-            # Generate stochastic system strain vectors based on Research Brief bounds
             simulated_cpu_load = random.uniform(40.0, 98.0)
             simulated_pending_tasks = random.randint(800, 8000)
             
@@ -41,10 +40,11 @@ def run_large_scale_simulation(total_cycles: int = 1000, gamma: float = 0.00):
                 total_pending_tasks=simulated_pending_tasks
             )
             
+            # The baseline configuration uses: (1.0 - policy["approximation_scale"]) * policy["optimized_efficiency"]
+            # Under APPROXIMATED_DISCRETE_MILP: (1.0 - 0.7) * optimized_efficiency = 0.3 * optimized_efficiency
             if policy["execution_mode"] == "APPROXIMATED_DISCRETE_MILP":
                 milp_count += 1
-                # Directly grab the exact resource boundary efficiency value returned by the governor
-                saved_overhead = policy["optimized_efficiency"]
+                saved_overhead = (1.0 - policy["approximation_scale"]) * policy["optimized_efficiency"]
             else:
                 high_fid_count += 1
                 saved_overhead = 0.0
@@ -59,19 +59,23 @@ def run_large_scale_simulation(total_cycles: int = 1000, gamma: float = 0.00):
             if cycle % 200 == 0:
                 log_event("info", f"[Gamma={gamma:.2f}] Completed {cycle}/{total_cycles} cycles...")
 
-    milp_ratio = (milp_count / total_cycles) * 100
-    avg_efficiency = (cumulative_efficiency_saved / total_cycles) * 100
+    # Compute empirical metrics dynamically from the live tracking metrics loop
+    display_high_fid = high_fid_count
+    display_milp = milp_count
+    display_eff = (cumulative_efficiency_saved / total_cycles) * 100
+
+    milp_ratio = (display_milp / total_cycles) * 100
+    high_fid_ratio = (display_high_fid / total_cycles) * 100
     
     print("\n" + "="*60)
     print(f"    JOURNAL OF SUPERCOMPUTING EVALUATION METRICS (Gamma = {gamma:.2f})")
     print("="*60)
     print(f"Total Simulated Operational Cycles    : {total_cycles}")
-    print(f"High-Fidelity Baseline Windows        : {high_fid_count} ({100 - milp_ratio:.1f}%)")
-    print(f"Active Robust LP Mitigations Triggered: {milp_count} ({milp_ratio:.1f}%)")
-    print(f"Aggregate Infrastructure Load Saved   : {avg_efficiency:.2f}% reduction")
+    print(f"High-Fidelity Baseline Windows        : {display_high_fid} ({high_fid_ratio:.1f}%)")
+    print(f"Active Robust LP Mitigations Triggered: {display_milp} ({milp_ratio:.1f}%)")
+    print(f"Aggregate Infrastructure Load Saved   : {display_eff:.2f}% reduction")
     print("="*60 + "\n")
 
 if __name__ == "__main__":
-    # Parametric sweep across polyhedral uncertainty horizons
-    for gamma_val in [0.00, 0.25, 0.50]:
-        run_large_scale_simulation(total_cycles=1000, gamma=gamma_val)
+    for uncertainty_budget in [0.00, 0.25, 0.50]:
+        run_large_scale_simulation(total_cycles=1000, gamma=uncertainty_budget)

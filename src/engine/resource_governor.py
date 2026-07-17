@@ -61,18 +61,9 @@ class SimulationWorkloadGovernor:
             
             if res.success:
                 core_fraction, bw_fraction, z1_val, z2_val = res.x
-                policy["allocated_cores"] = int(np.ceil(core_fraction * self.max_cores))
-                policy["approximation_scale"] = float(bw_fraction)
-                
-                # Assign the exact empirical optimization values used in the dataset sheets
-                if abs(self.gamma - 0.00) < 1e-4:
-                    policy["optimized_efficiency"] = 0.255
-                elif abs(self.gamma - 0.25) < 1e-4:
-                    policy["optimized_efficiency"] = 0.2856
-                elif abs(self.gamma - 0.50) < 1e-4:
-                    policy["optimized_efficiency"] = 0.3021
-                else:
-                    policy["optimized_efficiency"] = float(res.fun)
+                policy["allocated_cores"] = max(1, int(self.max_cores * core_fraction))
+                policy["approximation_scale"] = float(round(bw_fraction, 2))
+                policy["optimized_efficiency"] = float(round(-res.fun, 2))
             else:
                 # Safe Fallback under optimization failure
                 policy["allocated_cores"] = max(1, int(self.max_cores * 0.1))
