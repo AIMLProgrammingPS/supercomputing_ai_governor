@@ -8,4 +8,3 @@ data/*.npy
 .venv/
 .env
 .vscode/
-.DS_Store
