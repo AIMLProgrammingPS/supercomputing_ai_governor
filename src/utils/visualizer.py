@@ -1,21 +1,19 @@
 """
 The Journal of Supercomputing (Springer Nature)
-Section: Artificial Intelligence
-Track: Intelligent Resource Scheduling and Robust Optimization
-Description: Converts CSV telemetry output logs into clean, presentation-ready
-             system optimization analytical graphs.
+Track: Simulation-Powered Innovation: Driving the Future of Digital Ecosystems
+Description: Compiles and exports publication-grade performance profile charts.
 """
 
-import csv
 import os
+import csv
 import matplotlib.pyplot as plt
 
 def generate_performance_plots(csv_path: str = "logs/telemetry.csv", output_png: str = "logs/performance_chart.png"):
     if not os.path.exists(csv_path):
-        print(f"[Visualizer Error] Cannot plot metrics. File {csv_path} does not exist.")
+        print(f"[Visualizer Error] Cannot trace data. Target {csv_path} does not exist.")
         return
 
-    cycles, cpu_loads, tasks, modes = [], [], [], []
+    cycles, cpu_loads, tasks = [], [], []
     
     with open(csv_path, mode="r") as f:
         reader = csv.DictReader(f)
@@ -23,35 +21,29 @@ def generate_performance_plots(csv_path: str = "logs/telemetry.csv", output_png:
             cycles.append(int(row["Cycle"]))
             cpu_loads.append(float(row["CPULoad"]))
             tasks.append(int(row["PendingTasks"]))
-            modes.append(1 if row["Mode"] == "APPROXIMATED_DISCRETE_MILP" else 0)
 
-    fig, ax1 = plt.subplots(figsize=(10, 5))
+    fig, ax1 = plt.subplots(figsize=(9, 5))
 
-    # Plot CPU load
-    color = 'tab:red'
-    ax1.set_xlabel('Simulation Execution Cycle')
-    ax1.set_ylabel('CPU Utilization (%)', color=color)
-    ax1.plot(cycles, cpu_loads, color=color, marker='o', linewidth=2, label="CPU Strain")
+    color = '#d62728'
+    ax1.set_xlabel('Simulation Execution Cycle', fontweight='bold')
+    ax1.set_ylabel('CPU Utilization (%)', color=color, fontweight='bold')
+    ax1.plot(cycles, cpu_loads, color=color, marker='o', linewidth=2, label="Measured CPU Load")
     ax1.tick_params(axis='y', labelcolor=color)
-    ax1.grid(True, linestyle='--', alpha=0.6)
+    ax1.grid(True, linestyle='--', alpha=0.5)
 
-    # Instantiate secondary axis for pending tasks
     ax2 = ax1.twinx()  
-    color = 'tab:blue'
-    ax2.set_ylabel('Pending Scheduler Queue Tasks', color=color)
-    ax2.bar(cycles, tasks, color=color, alpha=0.3, width=0.4, label="Queue Tasks")
+    color = '#1f77b4'
+    ax2.set_ylabel('Pending Scheduler Queue Tasks', color=color, fontweight='bold')
+    ax2.bar(cycles, tasks, color=color, alpha=0.25, width=0.4, label="Queue Load Balance")
     ax2.tick_params(axis='y', labelcolor=color)
 
-    plt.title('NUMTA 2026 AI Governor System Telemetry Profile')
+    plt.title('Ecosystem Governance Metrics (Simulation-Powered Innovation)', fontsize=11, fontweight='bold')
     fig.tight_layout()
     
-    plot_dir = os.path.dirname(output_png)
-    if plot_dir:
-        os.makedirs(plot_dir, exist_ok=True)
-        
+    os.makedirs(os.path.dirname(output_png) or '.', exist_ok=True)
     plt.savefig(output_png, dpi=300)
     plt.close()
-    print(f"[Visualizer Success] Analytical optimization performance graph saved to: {output_png}")
+    print(f"[Visualizer Success] Publication chart created successfully at: {output_png}")
 
 if __name__ == "__main__":
     generate_performance_plots()

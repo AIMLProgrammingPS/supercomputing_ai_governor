@@ -1,81 +1,97 @@
 """
 The Journal of Supercomputing (Springer Nature)
-Section: Artificial Intelligence
-Track: Intelligent Resource Scheduling and Robust Optimization
-Description: Mass-scale stochastic simulation engine (1,000+ cycles) 
-             evaluating Robust LP Counterparts across varying uncertainty budgets.
+Track: Simulation-Powered Innovation: Driving the Future of Digital Ecosystems
+Description: High-density verification suite executing true multi-seed comparative baselines 
+             (No Governor vs. Matched-Signal Static Cap vs. Robust Governor) calculating across-run 95% CIs.
 """
 
 import csv
 import os
 import random
+import numpy as np
+import scipy.stats as st
 from src.engine.resource_governor import SimulationWorkloadGovernor
 from src.utils.logger import log_event
 
-def run_large_scale_simulation(total_cycles: int = 1000, gamma: float = 0.00):
-    governor = SimulationWorkloadGovernor(available_cores=8, memory_bandwidth_gbps=32.0, gamma=gamma)
-    log_event("info", f"Initializing robust high-density simulation matrix: {total_cycles} cycles at Gamma={gamma}...")
+def run_multi_seed_evaluation(total_seeds: int = 30, execution_cycles: int = 100, gamma: float = 0.00):
+    log_event("info", f"Starting multi-seed evaluation ({total_seeds} runs) for Gamma = {gamma:.2f} against matched baselines...")
+    
+    governor_savings_across_seeds = []
+    static_savings_across_seeds = []
     
     log_dir = "logs"
     os.makedirs(log_dir, exist_ok=True)
     csv_path = os.path.join(log_dir, f"scale_telemetry_gamma_{gamma:.2f}.csv")
     
-    milp_count = 0
-    high_fid_count = 0
-    cumulative_efficiency_saved = 0.0
-    
-    # Reset random seed to ensure identical system strain vectors across different Gamma evaluations
-    random.seed(42)
-    
     with open(csv_path, mode="w", newline="") as f:
         writer = csv.writer(f)
-        writer.writerow(["Cycle", "CPULoad", "PendingTasks", "Mode", "EfficiencySaved"])
+        writer.writerow(["Seed", "Cycle", "RawCPU", "Tasks", "GovMode", "GovSaved", "StaticSaved"])
         
-        for cycle in range(1, total_cycles + 1):
-            simulated_cpu_load = random.uniform(40.0, 98.0)
-            simulated_pending_tasks = random.randint(800, 8000)
+        for run_seed in range(100, 100 + total_seeds):
+            random.seed(run_seed)
+            governor = SimulationWorkloadGovernor(available_cores=8, memory_bandwidth_gbps=32.0, gamma=gamma)
+            governor.agent.reset_filter()
             
-            policy = governor.determine_execution_policy(
-                current_cpu_load=simulated_cpu_load, 
-                total_pending_tasks=simulated_pending_tasks
-            )
+            gov_saved_run_accumulator = 0.0
+            static_saved_run_accumulator = 0.0
             
-            # The baseline configuration uses: (1.0 - policy["approximation_scale"]) * policy["optimized_efficiency"]
-            # Under APPROXIMATED_DISCRETE_MILP: (1.0 - 0.7) * optimized_efficiency = 0.3 * optimized_efficiency
-            if policy["execution_mode"] == "APPROXIMATED_DISCRETE_MILP":
-                milp_count += 1
-                saved_overhead = (1.0 - policy["approximation_scale"]) * policy["optimized_efficiency"]
-            else:
-                high_fid_count += 1
-                saved_overhead = 0.0
+            for cycle in range(1, execution_cycles + 1):
+                raw_cpu = random.uniform(45.0, 98.0)
+                pending_tasks = random.randint(500, 8000)
                 
-            cumulative_efficiency_saved += saved_overhead
+                # 1. Evaluate Robust LP Governor Policy (This handles internal EMA smoothing)
+                gov_policy = governor.determine_execution_policy(raw_cpu, pending_tasks)
+                
+                # Extract the smoothed metrics calculated inside the governor agent
+                smooth_cpu = gov_policy["smoothed_cpu"]
+                smooth_task = gov_policy["smoothed_task"]
+                
+                if gov_policy["execution_mode"] == "APPROXIMATED_DISCRETE_MILP":
+                    gov_saved = (1.0 - gov_policy["approximation_scale"]) * gov_policy["optimized_efficiency"]
+                else:
+                    gov_saved = 0.0
+                
+                # 2. MATCHED-SIGNAL BASELINE: Evaluates the EXACT same smoothed values to eliminate frequency bias
+                if smooth_cpu > governor.agent.cpu_threshold or smooth_task > governor.agent.task_threshold:
+                    static_saved = 0.50 * 0.40  # Static reduction ratio * expected performance loss
+                else:
+                    static_saved = 0.0
+                    
+                gov_saved_run_accumulator += gov_saved
+                static_saved_run_accumulator += static_saved
+                
+                writer.writerow([
+                    run_seed, cycle, round(raw_cpu, 2), pending_tasks,
+                    gov_policy["execution_mode"], round(gov_saved, 4), round(static_saved, 4)
+                ])
             
-            writer.writerow([
-                cycle, round(simulated_cpu_load, 2), simulated_pending_tasks, 
-                policy["execution_mode"], round(saved_overhead, 4)
-            ])
-            
-            if cycle % 200 == 0:
-                log_event("info", f"[Gamma={gamma:.2f}] Completed {cycle}/{total_cycles} cycles...")
+            governor_savings_across_seeds.append((gov_saved_run_accumulator / execution_cycles) * 100)
+            static_savings_across_seeds.append((static_saved_run_accumulator / execution_cycles) * 100)
 
-    # Compute empirical metrics dynamically from the live tracking metrics loop
-    display_high_fid = high_fid_count
-    display_milp = milp_count
-    display_eff = (cumulative_efficiency_saved / total_cycles) * 100
+    # Statistical Evaluation Engine: Compute 95% CI correctly across unique run distributions
+    def calculate_cross_run_confidence(data):
+        n = len(data)
+        mean = np.mean(data)
+        sem = st.sem(data)
+        if sem == 0:
+            return mean, 0.0, 0.0
+        interval = sem * st.t.ppf((1 + 0.95) / 2., n - 1)
+        return mean, mean - interval, mean + interval
 
-    milp_ratio = (display_milp / total_cycles) * 100
-    high_fid_ratio = (display_high_fid / total_cycles) * 100
+    gov_mean, gov_low, gov_high = calculate_cross_run_confidence(governor_savings_across_seeds)
+    stat_mean, _, _ = calculate_cross_run_confidence(static_savings_across_seeds)
     
-    print("\n" + "="*60)
-    print(f"    JOURNAL OF SUPERCOMPUTING EVALUATION METRICS (Gamma = {gamma:.2f})")
-    print("="*60)
-    print(f"Total Simulated Operational Cycles    : {total_cycles}")
-    print(f"High-Fidelity Baseline Windows        : {display_high_fid} ({high_fid_ratio:.1f}%)")
-    print(f"Active Robust LP Mitigations Triggered: {display_milp} ({milp_ratio:.1f}%)")
-    print(f"Aggregate Infrastructure Load Saved   : {display_eff:.2f}% reduction")
-    print("="*60 + "\n")
+    print("\n" + "="*65)
+    print(f"   VALIDATED MULTI-SEED METRICS PROFILE (Gamma = {gamma:.2f})")
+    print("="*65)
+    print(f"Evaluated Independent Seeds         : {total_seeds}")
+    print(f"Static Baseline Mean Savings        : {stat_mean:.2f}%")
+    print(f"Robust LP Governor Mean Savings     : {gov_mean:.2f}%")
+    print(f"True Cross-Run 95% Confidence Range : [{gov_low:.2f}% - {gov_high:.2f}%]")
+    print("="*65 + "\n")
+    
+    return gov_mean
 
 if __name__ == "__main__":
     for uncertainty_budget in [0.00, 0.25, 0.50]:
-        run_large_scale_simulation(total_cycles=1000, gamma=uncertainty_budget)
+        run_multi_seed_evaluation(total_seeds=30, execution_cycles=100, gamma=uncertainty_budget)
